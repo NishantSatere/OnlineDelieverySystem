@@ -1,19 +1,23 @@
 import express from "express";
 import dotenv from "dotenv"
-import connectSequelize from "./config/database.js";
+import { connectSequelize, sequelizeConfig } from "./config/database.js";
+import userRouter from "./routes/userRoutes.js";
+import DeliveryBoysRouter from "./routes/deliveryboyRoutes.js";
+
 
 const app = express();
 app.use(express.json());
 dotenv.config();
-
-const PORT = process.env.PORT | 5001 
-
-
+const PORT = process.env.PORT | 5001
+app.use('/', userRouter)
+app.use('/deliveryboy', DeliveryBoysRouter)
 
 async function startServer() {
     try {
         // const connection = await db.connectDB();
-        const db  = await connectSequelize()
+        await connectSequelize()
+        await sequelizeConfig.sync({ alter: true });
+        console.log("sync done ... ")
         app.listen(PORT, () => {
             console.log(`Server is running on http://localhost:${PORT}`);
         });

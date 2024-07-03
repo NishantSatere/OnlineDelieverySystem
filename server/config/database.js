@@ -1,24 +1,24 @@
 import Sequelize from "sequelize"
 
-const sequelizeConfig = new Sequelize('mydatabase', 'root' , 'nishant' ,{
-    host : 'localhost',
-    dialect : 'mysql'
+const sequelizeConfig = new Sequelize('mydatabase', 'root', 'nishant', {
+    host: 'localhost',
+    dialect: 'mysql'
 })
 
 const connectSequelize = async () => {
-    try{
+    try {
         const connection = await sequelizeConfig.authenticate();
         console.log("connected to sequelize")
         return connection
-    }catch(err){
+    } catch (err) {
         console.log(err)
     }
-} 
-
-export default {
-    connectSequelize
 }
 
+export {
+    sequelizeConfig,
+    connectSequelize
+}
 
 
 // ***** MYSQL ******

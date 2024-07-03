@@ -1,0 +1,81 @@
+import bcrypt from "bcrypt";
+import Users from "../models/Users.js"
+import jwt from "jsonwebtoken"
+
+const RegisterUser = async (req,res) => {
+    const { username, email, password } = req.body;
+    try {
+        if (!username || !email || !password) {
+            return res.status(400).json({ msg: "Please provide all the fields" });
+        }
+        const user = await Users.findOne({ where: { email: email } });
+        if (user) {
+            return res.status(409).json({ msg: "User already exists" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await Users.create({
+            username: username,
+            email: email,
+            password: hashedPassword
+        });
+
+        return res.status(201).json({ msg: "User created successfully", user: newUser });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg : "Failed to register user"})
+    }
+}
+
+const LoginUser = async (req, res) => {
+    const {email , password} = req.body
+    try{
+        if (!email || !password) {
+            return res.status(400).json({ msg: "Please provide all the fields" });
+        }
+        const user = await Users.findOne({ where: { email: email } });
+        if(user == null){
+            return res.status(404).json({ msg: "User doesn't exist" })
+        }
+        const result = await bcrypt.compare(password , user.password)
+        if(result){
+            const token = jwt.sign({ userId: user.id, userType: 'user' }, 'secret_key', {
+                expiresIn: '1h'
+            });
+            return res.status(200).json({ msg: "Login successfullt", Access_token: token })
+        }else{
+            return res.status(400).json({ msg: "Invalid password" })
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({ msg: "Failed to login user" })
+    }
+    try {
+        const email = req.body.email
+        const password = req.body.password
+
+        const result = await Users.findOne({ where: { email: email } })
+
+        if (result == null) {
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+        const token = jwt.sign({ userId: result.id }, 'secret_key', {
+            expiresIn: '1h',
+        })
+        console.log(token)
+        return res.status(200).json(result)
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const OnlyUserAccess = async (req, res) => {
+    console.log("authorized")
+    return res.send("access")
+}
+
+export {
+    RegisterUser,
+    LoginUser,
+    OnlyUserAccess
+}
