@@ -1,11 +1,27 @@
 import bcrypt from "bcrypt";
 import DeliveryBoys from "../models/DeliveryBoys.js"; // Adjust the path as necessary
 import jwt from "jsonwebtoken"
+import {body , validationResult} from "express-validator"
 const RegisterDeliveryBoy = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, phoneNo , password } = req.body;
     try {
-        if (!username | !email | !password) {
+        if (!username | !email | !password | !phoneNo) {
             return res.status(400).json({ msg: "Please provide all the fileds" })
+        }
+        await body('phoneNo').isMobilePhone().run(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ msg: "Please provide valid phone number!" });
+        }
+        await body('email').isEmail().custom(value => value.endsWith('@gmail.com')).run(req);
+        const gmailError = validationResult(req);
+        if (!gmailError.isEmpty()) {
+            return res.status(400).json({ msg: "Please provide valid gamil address!" });
+        }
+        await body('password').isStrongPassword().run(req);
+        const passwordError = validationResult(req);
+        if (!passwordError.isEmpty()) {
+            return res.status(400).json({ msg: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character" });
         }
         const deliveryboy = await DeliveryBoys.findOne({ where: { email: email } });
         if (deliveryboy) {
@@ -15,6 +31,7 @@ const RegisterDeliveryBoy = async (req, res) => {
         const newboy = await DeliveryBoys.create({
             username: username,
             email: email,
+            phoneNo: phoneNo,
             password: hashedPassword
         });
         return res.status(201).json({ msg: "User created successfully", user: newboy });
@@ -29,6 +46,16 @@ const LoginDeliveryBoy = async (req, res) => {
     try {
         if (!email || !password) {
             return res.status(400).json({ msg: "Please provide all the fields" });
+        }
+        await body('email').isEmail().custom(value => value.endsWith('@gmail.com')).run(req);
+        const gmailError = validationResult(req);
+        if (!gmailError.isEmpty()) {
+            return res.status(400).json({ msg: "Please provide valid gamil address!" });
+        }
+        await body('password').isStrongPassword().run(req);
+        const passwordError = validationResult(req);
+        if (!passwordError.isEmpty()) {
+            return res.status(400).json({ msg: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character" });
         }
         const deliveryboy = await DeliveryBoys.findOne({ where: { email: email } });
         if (deliveryboy == null) {

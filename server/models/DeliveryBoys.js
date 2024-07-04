@@ -11,11 +11,27 @@ const DeliveryBoys = sequelizeConfig.define(
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
+            isEmail: {
+                args: true,
+                msg: "Invalid email format. Must be a valid email address."
+            },
+            isGmail(value) {
+                if (!value.endsWith('@gmail.com')) {
+                    throw new Error('Email must be a Gmail address');
+                }
+            }
         },
         password: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        phoneNo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [10, 10] 
+            }
         },
         Ratings: {
             type: DataTypes.INTEGER,
@@ -32,6 +48,11 @@ const DeliveryBoys = sequelizeConfig.define(
             validate: {
                 isInt: true
             }
+        },
+        isAvilable: {
+            type: DataTypes.BOOLEAN,
+            allownull : false,
+            defaultValue: false
         }
     }
 )
