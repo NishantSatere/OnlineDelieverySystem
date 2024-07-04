@@ -2,6 +2,12 @@ import bcrypt from "bcrypt";
 import Users from "../models/Users.js"
 import jwt from "jsonwebtoken"
 import {body , validationResult} from "express-validator"
+import Hotels from "../models/Hotels.js"
+import Products from "../models/Products.js"
+import Orders from "../models/Orders.js"
+import { where } from "sequelize";
+import DeliveryBoys from "../models/DeliveryBoys.js";
+import OrderProducts from "../models/OrderProducts.js";
 const RegisterUser = async (req,res) => {
     const { username, email, phoneNo, password } = req.body;
     try {
@@ -76,6 +82,84 @@ const LoginUser = async (req, res) => {
     }
 }
 
+const getAllHotels = async (req,res) => {
+    try{
+        const allHotels = await Hotels.findAll()
+        if (allHotels.length > 0) {
+            return res.status(200).json({ hotels: allHotels });
+        }
+        return res.status(200).json({ msg: "No hotels found" });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "failed to load hotels"})
+    }
+}
+
+const getProducts = async (req,res) => {
+    try{
+        const hotelId = req.params.id; 
+        const allProducts = await Products.findAll({where : {HotelId : hotelId}})
+        if(allProducts.length > 0){
+            return res.status(200).json({ Products : allProducts})
+        }
+        return res.status(200).json({ msg: "No products found" });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "failed to load products"})
+    }
+}
+
+const getMyOrders = async (req, res) => {
+    try{
+        const userId = req.user.userId
+        const myOrders = await Orders.findAll({where : { userId : userId}})
+        if(myOrders.length > 0){
+            return res.status(200).json({ Orders : myOrders})
+        }
+        return res.status(200).json({ msg: "No orders found" });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "failed to load my orders"})
+    }
+}
+
+const bookOrder = async (req,res) => {
+    try{
+        const ordersData = req.body.ordersData
+        if(!ordersData || !Array.isArray(ordersData) || ordersData.length === 0){
+            return res.status(400).json({msg : "Invalid request format or empty orders array"})
+        }
+        const userId = req.user.userId
+        const deliveryboy = await DeliveryBoys.findOne({where : {isAvilable : true}})
+        if (!deliveryboy) {
+            return res.status(404).json({ msg: "No available delivery boys" });
+        }
+        deliveryboy.isAvilable = false
+        await deliveryboy.save()
+        const OrderDone = await Orders.create({userId : userId, deliveryBoyId : deliveryboy.id, orderDetails : "not provided"})
+        const createdOrders = []
+        for(const orderData of  ordersData){
+            const {productId , quantity} = orderData
+            const ProductsDetials = await Products.findOne({where :{id : productId}})
+            if (!ProductsDetials) {
+                console.log(`Product with ID ${ProductsDetials.id} not found`);
+                continue; 
+            }
+            const HotelId = ProductsDetials.HotelId
+            const Hotel = await Hotels.findOne({where : {id : HotelId}})
+            const HotelName = Hotel.HotelName
+            console.log(HotelName, `Prepare ${quantity}`)
+
+            const createdEntry = await OrderProducts.create({OrderId : OrderDone.id, ProductId :productId, quantity : quantity })
+            createdOrders.push(createdEntry)
+        }
+        return res.status(200).json({ orderDetails: OrderDone, extraInfo: createdOrders });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "failed to book order"})
+    }
+}
+
 const OnlyUserAccess = async (req, res) => {
     console.log("authorized")
     return res.send("access")
@@ -84,5 +168,9 @@ const OnlyUserAccess = async (req, res) => {
 export {
     RegisterUser,
     LoginUser,
+    getAllHotels,
+    getProducts,
+    getMyOrders,
+    bookOrder,
     OnlyUserAccess
 }

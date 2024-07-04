@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import DeliveryBoys from "../models/DeliveryBoys.js"; // Adjust the path as necessary
 import jwt from "jsonwebtoken"
-import {body , validationResult} from "express-validator"
+import { body, validationResult } from "express-validator"
 const RegisterDeliveryBoy = async (req, res) => {
-    const { username, email, phoneNo , password } = req.body;
+    const { username, email, phoneNo, password } = req.body;
     try {
         if (!username | !email | !password | !phoneNo) {
             return res.status(400).json({ msg: "Please provide all the fileds" })
