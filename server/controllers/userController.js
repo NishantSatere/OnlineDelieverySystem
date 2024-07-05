@@ -113,8 +113,27 @@ const getMyOrders = async (req, res) => {
     try{
         const userId = req.user.userId
         const myOrders = await Orders.findAll({where : { userId : userId}})
+        let allOrderDetails = []
+        for(const order of myOrders){
+            const orderId = order.id
+            const orderAmount = order.orderAmount
+            let singleOrderProducts = []
+            const orderProducts = await OrderProducts.findAll({where: {OrderId : orderId}}) 
+            for(const orderProducst of orderProducts){
+                const ProductId = orderProducst.ProductId
+                const product = await Products.findOne({where: {id : ProductId}})
+                if(product){
+                    singleOrderProducts.push(product)
+                }
+            }
+            allOrderDetails.push({
+                orderId: orderId,
+                orderAmount: orderAmount,
+                products: singleOrderProducts
+            });
+        }
         if(myOrders.length > 0){
-            return res.status(200).json({ Orders : myOrders})
+            return res.status(200).json({ Orders : allOrderDetails})
         }
         return res.status(200).json({ msg: "No orders found" });
     }catch(err){
@@ -138,6 +157,7 @@ const bookOrder = async (req,res) => {
         await deliveryboy.save()
         const OrderDone = await Orders.create({userId : userId, deliveryBoyId : deliveryboy.id, orderDetails : "not provided"})
         const createdOrders = []
+        let orderAmount = 0
         for(const orderData of  ordersData){
             const {productId , quantity} = orderData
             const ProductsDetials = await Products.findOne({where :{id : productId}})
@@ -145,15 +165,23 @@ const bookOrder = async (req,res) => {
                 console.log(`Product with ID ${ProductsDetials.id} not found`);
                 continue; 
             }
+            orderAmount += ProductsDetials.priceOfProduct * quantity
+            console.log(orderAmount)
             const HotelId = ProductsDetials.HotelId
             const Hotel = await Hotels.findOne({where : {id : HotelId}})
             const HotelName = Hotel.HotelName
-            console.log(HotelName, `Prepare ${quantity}`)
-
+            if (!HotelName) {
+                console.log(`Hotel with ID ${Hotel.id} not found`);
+                continue; 
+            }else{
+                console.log(HotelName, `Prepare ${quantity}`)
+            }
             const createdEntry = await OrderProducts.create({OrderId : OrderDone.id, ProductId :productId, quantity : quantity })
             createdOrders.push(createdEntry)
         }
-        return res.status(200).json({ orderDetails: OrderDone, extraInfo: createdOrders });
+        OrderDone.orderAmount = orderAmount
+        await OrderDone.save()
+        return res.status(200).json({orderAmount : OrderDone.orderAmount, orderDetails: OrderDone, extraInfo: createdOrders });
     }catch(err){
         console.log(err)
         return res.status(500).json({msg: "failed to book order"})

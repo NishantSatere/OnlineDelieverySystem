@@ -49,6 +49,13 @@ const DeliveryBoys = sequelizeConfig.define(
                 isInt: true
             }
         },
+        TodayOrders:{
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            validate: {
+                isInt: true
+            }
+        },
         isAvilable: {
             type: DataTypes.BOOLEAN,
             allownull : false,

@@ -14,6 +14,11 @@ const Orders = sequelizeConfig.define(
             type: DataTypes.BOOLEAN,
             defaultValue: false,
             allowNull: false
+        },
+        orderAmount:{
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
         }
     }
 );

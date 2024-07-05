@@ -9,6 +9,11 @@ const Products = sequelizeConfig.define(
             type: DataTypes.STRING,
             allownull: false,
         },
+        priceOfProduct : {
+            type: DataTypes.INTEGER,
+            allownull: false,
+            defaultvalue : 0
+        },
         HotelId: {
             type: DataTypes.INTEGER,
             allownull: false,

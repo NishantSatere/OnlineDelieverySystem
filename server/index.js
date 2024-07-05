@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import { connectSequelize, sequelizeConfig } from "./config/database.js";
 import userRouter from "./routes/userRoutes.js";
 import DeliveryBoysRouter from "./routes/deliveryboyRoutes.js";
+
 const app = express();
 app.use(express.json());
 dotenv.config();

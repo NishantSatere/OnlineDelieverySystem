@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import DeliveryBoys from "../models/DeliveryBoys.js"; // Adjust the path as necessary
 import jwt from "jsonwebtoken"
 import { body, validationResult } from "express-validator"
+import Orders from "../models/Orders.js";
 const RegisterDeliveryBoy = async (req, res) => {
     const { username, email, phoneNo, password } = req.body;
     try {
@@ -76,7 +77,41 @@ const LoginDeliveryBoy = async (req, res) => {
     }
 }
 
+const myPendingOrders = async (req,res) => {
+    try{
+        const deliveryboyId = req.deliveryboy.userId
+        const allOrders = await Orders.findAll({where : {deliveryBoyId : deliveryboyId}})
+        if(allOrders.length > 0){
+            return res.status(200).json({ PendingOrders : allOrders})
+        }
+        return res.status(200).json({ msg: "No orders found" });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "Failed to load orders"})
+    }
+}
+
+const orderDelivered = async (req,res) => {
+    try{
+        const orderId = req.body.orderId
+        const order = await Orders.findOne({where : {id : orderId}})
+        if(order){
+            order.orderStatus = true
+            await order.save()
+            return res.status(200).json({msg : "Marked"})
+        }else{
+            return res.status(200).json({msg: "No order found"})
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "Failed to mark as delivered"})
+    }
+}
+
+
 export {
     RegisterDeliveryBoy,
-    LoginDeliveryBoy
+    LoginDeliveryBoy,
+    orderDelivered,
+    myPendingOrders
 };
