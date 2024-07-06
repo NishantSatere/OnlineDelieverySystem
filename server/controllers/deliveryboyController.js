@@ -3,6 +3,7 @@ import DeliveryBoys from "../models/DeliveryBoys.js"; // Adjust the path as nece
 import jwt from "jsonwebtoken"
 import { body, validationResult } from "express-validator"
 import Orders from "../models/Orders.js";
+import { where } from "sequelize";
 const RegisterDeliveryBoy = async (req, res) => {
     const { username, email, phoneNo, password } = req.body;
     try {
@@ -93,9 +94,13 @@ const myPendingOrders = async (req,res) => {
 
 const orderDelivered = async (req,res) => {
     try{
+        const deliveryboyId = req.deliveryboy.userId
         const orderId = req.body.orderId
         const order = await Orders.findOne({where : {id : orderId}})
+        const deliveryboy = await DeliveryBoys.findOne({where:{id:deliveryboyId}})
         if(order){
+            deliveryboy.TodayOrders += 1;
+            await deliveryboy.save();
             order.orderStatus = true
             await order.save()
             return res.status(200).json({msg : "Marked"})
@@ -108,10 +113,24 @@ const orderDelivered = async (req,res) => {
     }
 }
 
+const changeStatus = async (req,res) => {
+    try{
+        const deliveryboyId = req.deliveryboy.userId
+        const deliveryboy = await DeliveryBoys.findOne({where:{id:deliveryboyId}})
+        deliveryboy.isAvilable = !deliveryboy.isAvilable;
+        await deliveryboy.save();
+        return res.status(200).json({msg: "Done"})
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({msg: "Failed to mark as delivered"})
+    }
+}
+
 
 export {
     RegisterDeliveryBoy,
     LoginDeliveryBoy,
     orderDelivered,
-    myPendingOrders
+    myPendingOrders,
+    changeStatus
 };
