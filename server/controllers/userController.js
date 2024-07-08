@@ -72,7 +72,7 @@ const LoginUser = async (req, res) => {
             const token = jwt.sign({ userId: user.id, userType: 'user' }, 'secret_key', {
                 expiresIn: '1h'
             });
-            return res.status(200).json({ msg: "Login successfullt", Access_token: token })
+            return res.status(200).json({ msg: "Login successfullt",user:user, token: token })
         }else{
             return res.status(400).json({ msg: "Invalid password" })
         }
@@ -188,6 +188,15 @@ const bookOrder = async (req,res) => {
     }
 }
 
+const UserLogout = async (req, res) => {
+    try {
+        return res.status(200).json({ msg: "User logged out successfully" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: "Failed to logout user" });
+    }
+}
+
 const OnlyUserAccess = async (req, res) => {
     console.log("authorized")
     return res.send("access")
@@ -200,5 +209,6 @@ export {
     getProducts,
     getMyOrders,
     bookOrder,
-    OnlyUserAccess
+    OnlyUserAccess,
+    UserLogout
 }
