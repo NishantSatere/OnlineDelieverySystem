@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 
 const userCookie = Cookies.get('user');
 const tokenCookie = Cookies.get('token');
+const isLoggedin = Cookies.get('isLoggedin');
 
 let user = null;
 let token = null;
@@ -24,10 +25,12 @@ const preloadedState = {
     user: {
         user: user || null,
         token: token || null,
-        isAuthenticated: !!token,
+        isAuthenticated: !!token && isLoggedin === 'true',
+        isLoggedin: isLoggedin === 'true',
     }
 };
 
+console.log('Preloaded state:', preloadedState);
 const store = configureStore({
     reducer: {
         user: userReducer,

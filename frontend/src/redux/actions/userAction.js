@@ -19,11 +19,12 @@ export const login = (email, password) => async (dispatch) => {
         // Store user info and token in cookies
         Cookies.set('user', JSON.stringify(data.user));
         Cookies.set('token', data.token);
+        Cookies.set('isLoggedin', true);
 
         dispatch({ type: 'login', payload: { user: data.user, token: data.token } });
     } catch (error) {
-        console.log(error);
-        dispatch({ type: 'loginfail', payload: { message: error.response.data.message || 'An error occurred' } });
+        console.log(error.response.data.msg);
+        dispatch({ type: 'loginfail', payload: { message: error.response.data.msg || 'An error occurred' } });
     }
 };
 
@@ -37,6 +38,8 @@ export const logout = () => async (dispatch) => {
             },
             withCredentials: true,
         });
+        
+        Cookies.remove('isLoggedin');
         Cookies.remove('user');
         Cookies.remove('token');
         dispatch({ type: 'logout' });
@@ -44,3 +47,4 @@ export const logout = () => async (dispatch) => {
         console.log(error);
     }
 };
+
