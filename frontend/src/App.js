@@ -5,6 +5,9 @@ import {Login} from './pages/login';
 import {Register} from './pages/Register'; 
 import { LandingPage } from './pages/LandingPage';
 import { Navbar } from './componets/Navbar';
+import { Profile } from './pages/Profile';
+import { Orders } from './pages/Orders';
+import ProtectedRoute from './services/ProtectedRoute';
 import './App.css'; 
 
 function App() {
@@ -18,6 +21,8 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           </Routes>
         </div>
       </BrowserRouter>

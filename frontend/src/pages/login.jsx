@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { login } from "../redux/actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from 'react-router-dom';
-import store  from '../redux/store';
+
 export const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated } = useSelector(state => state.user);
-    const [Username, setUsername] = useState('');
+    const [email, setemail] = useState('');
     const [Password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success , setSuccess] = useState('');
@@ -22,10 +22,10 @@ export const Login = () => {
         }else if(loginfailmsg){
             setError(loginfailmsg);
         }
-    }, [isAuthenticated, navigate, loginfailmsg]);
+    }, [isAuthenticated, navigate, loginfailmsg, success]);
 
     const handleLogin = async () => {
-        await dispatch(login(Username, Password)); // Dispatch login action
+        await dispatch(login(email, Password)); // Dispatch login action
         // console.log('loginfailmsg:',loginfailmsg);
     };
 
@@ -37,9 +37,9 @@ export const Login = () => {
                 <h1 className="text-3xl font-semibold mb-4">Login!</h1>
                 <input
                     type="text"
-                    placeholder="Username"
-                    value={Username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="email"
+                    value={email}
+                    onChange={(e) => setemail(e.target.value)}
                     className="w-full py-2 px-4 mb-4 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <input

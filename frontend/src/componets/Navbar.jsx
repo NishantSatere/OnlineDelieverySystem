@@ -1,14 +1,15 @@
 import React from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/actions/userAction";
-
+// import { logout } from "../redux/actions/userAction";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import HomeIcon from '@mui/icons-material/Home';
 export const Navbar = () => {
     const dispatch = useDispatch();
-    const { isAuthenticated, isLoggedin, user } = useSelector(state => state.user);
+    const { isAuthenticated, isLoggedin } = useSelector(state => state.user);
 
-    const handleLogout = () => {
-        dispatch(logout());
-    };
+    // const handleLogout = () => {
+    //     dispatch(logout());
+    // };
 
     return (
         <nav className="bg-blue-500 p-4">
@@ -18,14 +19,14 @@ export const Navbar = () => {
                     {isAuthenticated && isLoggedin ? (
                         <>
                             <li>
-                                <a href="/home" className="text-white">Home</a>
+                                <a href="/home" className="text-white"><HomeIcon/></a>
                             </li>
                             <li>
-                                <span className="text-white">{user.username}</span>
+                                <a href='/profile' className="text-white"><AccountCircleIcon/></a>
                             </li>
-                            <li>
+                            {/* <li>
                                 <a href="/" className="text-white" onClick={handleLogout}>Logout</a>
-                            </li>
+                            </li> */}
                         </>
                     ) : (
                         <>

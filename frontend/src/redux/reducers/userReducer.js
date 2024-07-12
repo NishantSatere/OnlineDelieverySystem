@@ -27,5 +27,5 @@ export const userReducer = createReducer(initialState, (builder) => {
             state.isAuthenticated = false;
             state.isLoggedin = false;
             state.error = action.payload.message;
-        });
+        })
 });
