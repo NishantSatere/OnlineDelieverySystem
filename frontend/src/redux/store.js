@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { userReducer } from './reducers/userReducer';
 import { ordersReducer } from './reducers/ordersReducer';
+import { hotelsReducer } from './reducers/hotelsReducer';
 import Cookies from 'js-cookie';
 
 const userCookie = Cookies.get('user');
@@ -36,6 +37,7 @@ const store = configureStore({
     reducer: {
         user: userReducer,
         orders: ordersReducer,
+        hotels: hotelsReducer,
     },
     preloadedState,
 });

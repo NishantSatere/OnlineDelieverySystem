@@ -11,8 +11,7 @@ export const getMyOrders = () => async (dispatch) => {
             },
             withCredentials: true,
         });
-        console.log("hello", data.Orders);
-        dispatch({ type: 'fetchOrdersSuccess', payload: data.Orders });
+        dispatch({ type: 'fetchOrdersSuccess', payload : {orders : data.Orders} });
     } catch (error) {
         console.log(error);
         dispatch({ type: 'fetchOrdersFail', payload: { message: error.message } });

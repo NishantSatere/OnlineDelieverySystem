@@ -114,6 +114,7 @@ const getMyOrders = async (req, res) => {
         const userId = req.user.userId
         const myOrders = await Orders.findAll({where : { userId : userId}})
         let allOrderDetails = []
+        let hotelName = ""
         for(const order of myOrders){
             const orderId = order.id
             const orderAmount = order.orderAmount
@@ -122,14 +123,18 @@ const getMyOrders = async (req, res) => {
             for(const orderProducst of orderProducts){
                 const ProductId = orderProducst.ProductId
                 const product = await Products.findOne({where: {id : ProductId}})
-                if(product){
+                const hotel = await Hotels.findOne({where : {id : product.HotelId}})
+                hotelName = hotel.HotelName
+                if(product && hotel){
                     singleOrderProducts.push(product)
                 }
             }
             allOrderDetails.push({
                 orderId: orderId,
                 orderAmount: orderAmount,
-                products: singleOrderProducts
+                products: singleOrderProducts,
+                orderStatus: order.orderStatus,
+                HotelName: hotelName
             });
         }
         if(myOrders.length > 0){
