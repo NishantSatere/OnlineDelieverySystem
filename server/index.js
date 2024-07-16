@@ -20,7 +20,6 @@ app.use('/deliveryboy', DeliveryBoysRouter)
 
 async function startServer() {
     try {
-        // const connection = await db.connectDB();
         await connectSequelize()
         // await sequelizeConfig.sync({ alter: true });
         // console.log("sync done ... ")

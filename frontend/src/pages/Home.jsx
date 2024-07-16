@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getHotels } from '../redux/actions/hotelsAction';
 import { useDispatch, useSelector } from 'react-redux';
-
 export default function Home() {
     const navigate = useNavigate();
     const { isAuthenticated } = useSelector(state => state.user);
@@ -10,7 +9,7 @@ export default function Home() {
     const { hotels } = useSelector(state => state.hotels);
     const getallhotels = async () => {
         await dispatch(getHotels());
-        console.log(hotels);
+        // console.log(hotels);
     }
 
     const handleHotelClick = (id) => {
@@ -18,9 +17,10 @@ export default function Home() {
     }
 
     useEffect(() => {
-        getallhotels();
         if (!isAuthenticated) {
             navigate('/login');
+        }else{
+            getallhotels();
         }
     }, [isAuthenticated, navigate]);
 

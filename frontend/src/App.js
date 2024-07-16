@@ -8,6 +8,7 @@ import { Navbar } from './componets/Navbar';
 import { Profile } from './pages/Profile';
 import { Orders } from './pages/Orders';
 import { OrderDetails } from './pages/OrderDetails';
+import { HotelProducts } from './pages/HotelProducts';
 import ProtectedRoute from './services/ProtectedRoute';
 import './App.css'; 
 
@@ -24,7 +25,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-            <Route path="/orderdetails/:iD" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
+            <Route path="/hotelProducts/:id" element={<ProtectedRoute><HotelProducts /></ProtectedRoute>} />
           </Routes>
         </div>
       </BrowserRouter>

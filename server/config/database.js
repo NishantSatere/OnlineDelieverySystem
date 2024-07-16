@@ -1,24 +1,23 @@
-import Sequelize from "sequelize"
+import Sequelize from "sequelize";
 
 const sequelizeConfig = new Sequelize('mydatabase', 'root', 'nishant', {
-    host: 'localhost',
+    host: '127.0.0.1', // Use IPv4 address
     dialect: 'mysql'
-})
+});
 
 const connectSequelize = async () => {
     try {
-        const connection = await sequelizeConfig.authenticate();
-        console.log("connected to sequelize")
-        return connection
+        await sequelizeConfig.authenticate();
+        console.log("Connected to Sequelize");
     } catch (err) {
-        console.log(err)
+        console.log("Error connecting to Sequelize:", err);
     }
-}
+};
 
 export {
     sequelizeConfig,
     connectSequelize
-}
+};
 
 
 // ***** MYSQL ******

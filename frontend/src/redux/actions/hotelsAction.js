@@ -10,7 +10,7 @@ export const getHotels = () => async (dispatch) => {
             },
             withCredentials: true,
         });
-        console.log(data);
+        // console.log(data);
         dispatch({ type: 'fetchHotelsSuccess', payload : {hotels : data.hotels} });
     } catch (error) {
         console.log(error);
